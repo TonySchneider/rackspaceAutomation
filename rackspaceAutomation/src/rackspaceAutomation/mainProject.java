@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class HTTPrequests {
+public class mainProject {
 	private static URL rackspace;
 	public static String getSourceCode() throws IOException{
 		rackspace = new URL("https://apps.rackspace.com/index.php");
@@ -31,41 +31,15 @@ public class HTTPrequests {
         return source;
 	}
 	public static void main(String[] args) throws IOException, ParseException{
+		String url = "https://apps.rackspace.com/login.php";
 		String urlParameters  = "hostname=mailtrust.com&type=email&fake_pwd=Password&user_name=finance%40enzocasino.com&password=wV6kERa4hkfH59RIEpNi";
-		byte[] postData       = urlParameters.getBytes( StandardCharsets.UTF_8 );
-		int    postDataLength = postData.length;
-		String request        = "https://apps.rackspace.com/login.php";
-		URL    url            = new URL( request );
-		HttpURLConnection conn= (HttpURLConnection) url.openConnection();           
-		conn.setDoOutput( true );
-		conn.setInstanceFollowRedirects( false );
-		conn.setRequestMethod( "POST" );
-		conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded"); 
-		conn.setRequestProperty( "charset", "utf-8");
-		conn.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
-		conn.setUseCaches( false );
-		try( DataOutputStream wr = new DataOutputStream( conn.getOutputStream())) {
-		   wr.write( postData );
-		   wr.flush();
-		}
-		System.out.println(conn.getResponseCode());
-		System.out.println(conn.getResponseMessage());
-		System.out.println(conn.getHeaderField("Location"));
-		String Location = conn.getHeaderField("Location");
-		List<String> cookies = conn.getHeaderFields().get("Set-Cookie");
-		String wsid = (String) Location.subSequence(15, Location.length());
-//		System.out.println(returnInputStream(conn.getInputStream()));
+		HTTPpost login = new HTTPpost(url,urlParameters);
+		System.out.println(login.createConnection());
 		
-//		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//        String inputLine,source = "";
-//        while ((inputLine = in.readLine()) != null) 
-//        	source = source + inputLine + "\n";
-//        in.close();
-//        System.out.println(source);
-        
-        
-        
-        
+		String Location = login.getLocationResponse();
+		List<String> cookies = login.getCookies();
+		String wsid = login.getWSID();
+		/////////////////////
 		
 		String request2        = "https://apps.rackspace.com"+Location;
 		URL    url2            = new URL( request2 );
