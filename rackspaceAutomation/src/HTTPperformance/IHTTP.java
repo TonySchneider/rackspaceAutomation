@@ -1,4 +1,4 @@
-package rackspaceAutomation;
+package HTTPperformance;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
