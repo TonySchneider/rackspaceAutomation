@@ -1,4 +1,5 @@
 package HTTPperformance;
+
 import java.util.ArrayList;
 import java.io.*;
 
@@ -12,7 +13,7 @@ public class mainProject {
 	
 	public static void main(String[] args) throws IOException, ParseException{
 		String urlLogin = "https://apps.rackspace.com/login.php", rackspace = "https://apps.rackspace.com";
-		String urlLoginParameters  = "hostname=mailtrust.com&type=email&fake_pwd=Password&user_name=finance%40enzocasino.com&password=wV6kERa4hkfH59RIEpNi";
+		String urlLoginParameters  = "hostname=mailtrust.com&type=email&fake_pwd=Password&user_name=finance@bronzecasino.com&password=cdRYPwbox9Qcs2uePSCfrUNW";
 		
 		
 		HTTPpost login = new HTTPpost(urlLogin,urlLoginParameters);
@@ -30,7 +31,7 @@ public class mainProject {
 		
 		
         for(int i=0;i<mailsIDs.size();i++)
-        	new Thread((new HTTPpostThread("Enzo_Financial_"+i, "https://apps.rackspace.com/versions/webmail/16.4.1-RC/archive/fetch.php",login.getCookies(), wsid+"&msg_list=%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22"+mailsIDs.get(i)+"%22%2C%22unread%22%3Afalse%7D%5D"))).start();
+        	new Thread((new HTTPpostThread("Bronze_Support_"+i, "https://apps.rackspace.com/versions/webmail/16.4.1-RC/archive/fetch.php",login.getCookies(), wsid+"&msg_list=%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22"+mailsIDs.get(i)+"%22%2C%22unread%22%3Afalse%7D%5D"))).start();
         	
 	}
 	public static void setIDS(String source) throws ParseException{

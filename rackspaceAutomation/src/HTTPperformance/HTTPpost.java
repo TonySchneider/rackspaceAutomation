@@ -45,7 +45,7 @@ public class HTTPpost extends HTTP {
 		this.locationResponse = this.conn.getHeaderField("Location");
 		this.wsid = (String) getLocationResponse().subSequence(15, getLocationResponse().length());
 	}
-	public void fileInputStream(String fileName) throws IOException{
+	public String fileInputStream(String fileName) throws IOException{
 		InputStream in = getConn().getInputStream();
 		File downloadedFile = File.createTempFile(fileName+"_", ".zip");
 	    FileOutputStream out = new FileOutputStream(downloadedFile);        
@@ -64,5 +64,6 @@ public class HTTPpost extends HTTP {
 	    }
 	    in.close();
 	    out.close();
+	    return downloadedFile.getName();
 	}
 }

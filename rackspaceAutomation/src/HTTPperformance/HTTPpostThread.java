@@ -1,7 +1,10 @@
 package HTTPperformance;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import SMTPposts.rackspaceSMTP;
 
 public class HTTPpostThread extends HTTPpost implements Runnable {
 	private static int ID = 0;
@@ -17,7 +20,8 @@ public class HTTPpostThread extends HTTPpost implements Runnable {
 	public void run() {
 		try {
 			System.out.println(createConnection());
-			fileInputStream(fileName);
+			System.out.println(fileInputStream(fileName));
+			rackspaceSMTP.sendEmail("support@spinupcasino.com","gz94OPVkmGaNwy18Rl","support@spinupcasino.com","tony@cg.solutions","test","test",new File("C:/Users/tony/AppData/Local/Temp/Enzo_Financial_0_7580955758952788779.zip"));
 			System.out.println("Thread "+selfID+"is done.");
 		} catch (IOException e) {
 			e.printStackTrace();
