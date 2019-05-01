@@ -1,5 +1,6 @@
 package HTTPperformance;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -9,7 +10,7 @@ public interface IHTTP {
 	public URL getURL();
 	public List<String> getCookies();
 	public void setCookies(List<String> cookies);
-	public String createConnection();
+	public String createConnection() throws IOException;
 	public void setURL(URL url);
 	public void setConn(HttpURLConnection conn);
 	public HttpURLConnection getConn();

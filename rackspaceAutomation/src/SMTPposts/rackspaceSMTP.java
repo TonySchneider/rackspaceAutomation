@@ -18,7 +18,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 public class rackspaceSMTP {
-		public static void sendEmail(String username, String password, String from,String to, String Subject,String msg, File file){
+		public static boolean sendEmail(String username, String password, String from,String to, String Subject,String msg, File file){
 			// Recipient's email ID needs to be mentioned.
 //		      String to = "tony@cg.solutions";//change accordingly
 	//
@@ -78,11 +78,10 @@ public class rackspaceSMTP {
 		 		message.setContent(multipart);
 		         // Send message
 		         Transport.send(message);
-
-		         System.out.println("Sent message successfully....");
-
+		         return true;
 		      } catch (MessagingException e) {
 		            throw new RuntimeException(e);
 		      }
+		      
 		}
 }

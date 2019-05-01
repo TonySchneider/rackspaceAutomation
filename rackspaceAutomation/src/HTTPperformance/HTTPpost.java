@@ -13,10 +13,14 @@ public class HTTPpost extends HTTP {
 	private String wsid;
 	private byte[] postData;
 	private int postDataLength;
-	public HTTPpost(String url, String urlParameters) {
+	private String email;
+	private String pass;
+	public HTTPpost(String url, String urlParameters,String email,String pass) {
 		super(url);
-		postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+		postData = (urlParameters+"&user_name="+email+"&password="+pass).getBytes(StandardCharsets.UTF_8);
 		postDataLength = postData.length;
+		this.email = email;
+		this.pass = pass;
 	}
 	public HTTPpost(String url, List<String> cookies, String urlParameters) {
 		super(url,cookies);
@@ -64,6 +68,10 @@ public class HTTPpost extends HTTP {
 	    }
 	    in.close();
 	    out.close();
-	    return downloadedFile.getName();
+	    return downloadedFile.getAbsolutePath();
 	}
+	public String getEmail(){return this.email;}
+	public String getPass(){return this.pass;}
+	public void setEmail(String email){this.email = email;}
+	public void setPass(String pass){this.pass = pass;}
 }

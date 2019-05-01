@@ -4,7 +4,7 @@ import java.net.*;
 import java.util.List;
 import java.io.*;
 
-public abstract class HTTP {
+public abstract class HTTP implements IHTTP {
 	protected String strURL;
 	protected URL url = null;
 	protected HttpURLConnection conn = null;  

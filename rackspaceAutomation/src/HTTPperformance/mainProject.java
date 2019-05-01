@@ -14,7 +14,6 @@ public class mainProject {
 	private static JSONObject credentials;
 	public static void main(String[] args) throws IOException, ParseException{
 		parseEmailCredentials();
-		
 		for(int i=0; i<emails.size();i++){
 			new Thread(new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i)))).start();
 		}
