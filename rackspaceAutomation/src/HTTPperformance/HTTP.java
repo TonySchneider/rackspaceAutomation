@@ -33,5 +33,5 @@ public abstract class HTTP {
 		}
 		return "";
 	}
-	public String getRespondeStatus() throws IOException{return "("+getClass().getSimpleName()+")Status: "+this.conn.getResponseCode()+" "+this.conn.getResponseMessage();}
+	public String getRespondeStatus() throws IOException{return this.conn.getResponseCode()+" "+this.conn.getResponseMessage();}
 }
