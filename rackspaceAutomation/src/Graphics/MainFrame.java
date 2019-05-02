@@ -13,6 +13,7 @@ public class MainFrame extends JFrame {
 		super(title);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout(0,0));//set border layout for set 2 panels - one for the city background and one for the below buttons
+		setResizable(false);
 	}
 	public static MainFrame getInstance(){
 		if(frame == null)

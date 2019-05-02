@@ -5,8 +5,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 public class HTTPpost extends HTTP {
 	private String locationResponse;
@@ -15,9 +20,9 @@ public class HTTPpost extends HTTP {
 	private int postDataLength;
 	private String email;
 	private String pass;
-	public HTTPpost(String url, String urlParameters,String email,String pass) {
+	public HTTPpost(String url, String urlParameters,String email,String pass) throws UnsupportedEncodingException {
 		super(url);
-		postData = (urlParameters+"&user_name="+email+"&password="+pass).getBytes(StandardCharsets.UTF_8);
+		postData = (urlParameters+"&user_name="+email+"&password="+URLEncoder.encode(pass, "UTF-8")).getBytes(StandardCharsets.UTF_8);
 		postDataLength = postData.length;
 		this.email = email;
 		this.pass = pass;
@@ -68,7 +73,20 @@ public class HTTPpost extends HTTP {
 	    }
 	    in.close();
 	    out.close();
-	    return downloadedFile.getAbsolutePath();
+	    try {
+	         ZipFile zipFile = new ZipFile(downloadedFile.getAbsolutePath());
+	         zipFile.extractAll(System.getProperty("java.io.tmpdir")+fileName);
+	    } catch (ZipException e) {
+	        e.printStackTrace();
+	    }
+	    deleteFile(downloadedFile.getAbsolutePath());
+	    return System.getProperty("java.io.tmpdir")+fileName;
+	}
+	public boolean deleteFile(String path){
+		File file = new File(path); 
+		if(file.delete())
+            return true;
+        return false;
 	}
 	public String getEmail(){return this.email;}
 	public String getPass(){return this.pass;}

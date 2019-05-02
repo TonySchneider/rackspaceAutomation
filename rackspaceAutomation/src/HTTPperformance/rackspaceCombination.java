@@ -1,6 +1,7 @@
 package HTTPperformance;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
@@ -45,7 +46,13 @@ public class rackspaceCombination implements Runnable {
 		String urlLogin = "https://apps.rackspace.com/login.php", rackspace = "https://apps.rackspace.com";
 		String urlLoginParameters  = "hostname=mailtrust.com&type=email&fake_pwd=Password";
 		
-		HTTPpost login = new HTTPpost(urlLogin,urlLoginParameters,email,pass);
+		HTTPpost login = null;
+		try {
+			login = new HTTPpost(urlLogin,urlLoginParameters,email,pass);
+		} catch (UnsupportedEncodingException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		try {
 			ConnStatus = login.createConnection();
 		} catch (IOException e) {
@@ -58,8 +65,8 @@ public class rackspaceCombination implements Runnable {
 			try {
 				ConnStatus = webmail.createConnection();
 				if(ConnStatus.equals("200 OK")){
-//					System.out.println("Connected properly to "+emailName);
-					MainPanel.setLog("Connected properly to "+emailName);
+					System.out.println("Connected properly to "+emailName);
+					MainPanel.setLog("Connected properly to "+emailName,"regular");
 				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
@@ -74,16 +81,17 @@ public class rackspaceCombination implements Runnable {
 				/////////////////////
 				
 				if(mailsIDs.size() == 0){
-//					System.out.println("("+emailName+")No stuck mails");
-					MainPanel.setLog("("+emailName+")No stuck mails");
+					System.out.println("("+emailName+")No stuck mails");
+					MainPanel.setLog("("+emailName+")No stuck mails","regular");
 				}
 		        for(int i=0;i<mailsIDs.size();i++)
-		        	new Thread((new HTTPpostThread(emailName, "https://apps.rackspace.com/versions/webmail/16.4.1-RC/archive/fetch.php",login.getCookies(), login.getWSID()+"&msg_list=%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22"+mailsIDs.get(i)+"%22%2C%22unread%22%3Afalse%7D%5D",email,pass))).start();
+		        	new Thread((new HTTPpostThread(emailName, "https://apps.rackspace.com/versions/webmail/16.4.1-RC/archive/fetch.php",login.getCookies(), login.getWSID()+"&msg_list=%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22",mailsIDs.get(i),email,pass))).start();
 			}
 		}
 		else{
-//			System.out.println("Connection Error at "+emailName);
-			MainPanel.setLog("Connection Error at "+emailName);
+			System.out.println("Connection Error at "+emailName+" the pass is: "+pass);
+			MainPanel.setLog("Connection Error at "+emailName,"error");
 		}
+		
 	}
 }

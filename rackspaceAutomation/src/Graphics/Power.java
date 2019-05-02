@@ -9,6 +9,7 @@ public class Power extends JButton{
 	public Power(String image,String rolloverImage){
 		setIcon(new ImageIcon(this.getClass().getResource(image)));
 		setRolloverIcon(new ImageIcon(this.getClass().getResource(rolloverImage)));
+		setDisabledIcon(new ImageIcon(this.getClass().getResource(rolloverImage)));
 		setBorder(BorderFactory.createEmptyBorder());
 		setContentAreaFilled(false);
 		this.image = new ImageIcon(this.getClass().getResource(image));

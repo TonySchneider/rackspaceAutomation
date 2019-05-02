@@ -15,13 +15,23 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.border.TitledBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -33,34 +43,47 @@ import HTTPperformance.rackspaceCombination;
 public class MainPanel extends JPanel implements ActionListener{
 	private BufferedImage background = loadImage();
 	private static Dimension backgroundSize;
-	private final JPanel topPanel = new JPanel(),logPanel = new JPanel();
-	private static final JTextArea logs = new JTextArea(12,40);
+	private final JPanel topPanel = new JPanel(),powerPanel = new JPanel(),logPanel = new JPanel();
+	private updateCredPanel credentialsPanel;
+	private static final JTextPane logs = new JTextPane();
 	private static JSONArray emails;
 	private static JSONObject credentials;
 	private final Power power = new Power("/Images/power.png","/Images/power2.png");;
 	public MainPanel(){
+		try {
+			parseEmailCredentials();
+		} catch (IOException | ParseException e1) {
+			e1.printStackTrace();
+		}
 		setLayout(new GridLayout(2,1));
+		topPanel.setLayout(new GridLayout(1,2));
 		topPanel.setOpaque(false);
+//		credentialsPanel.setOpaque(false);
+		
+		powerPanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridy = 0;
+		JLabel warning= new JLabel(new ImageIcon(this.getClass().getResource("/Images/warning.jpg"))); 
+		powerPanel.add(warning,c);
+		powerPanel.setOpaque(false);
+		credentialsPanel = new updateCredPanel("Update Credentials",emails);
+		topPanel.add(credentialsPanel);
 		logPanel.setOpaque(false);
 		power.addActionListener(this);
-		topPanel.add(power);
+		c.gridy = 1;
+		powerPanel.add(power,c);
+		
+		topPanel.add(powerPanel);
 		add(topPanel);
 		
-		logPanel.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 0;
-		c.gridy = 0;
-		JLabel logFile = new JLabel("Log File");
-		logFile.setFont(new Font("Calibri", Font.BOLD, 18));
-		logFile.setForeground(Color.red);
-		logPanel.add(logFile,c);
-		
-		logs.setLineWrap(true);
+		logPanel.setBorder(BorderFactory.createTitledBorder(null, "Logs", TitledBorder.LEFT, TitledBorder.TOP, new Font("Monospace",Font.BOLD,12), Color.RED));
+		logs.setPreferredSize(new Dimension(450,190));
+//		logs.setLineWrap(true);
 		logs.setEditable(false);
+		DefaultCaret caret = (DefaultCaret) logs.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		JScrollPane logsScroll = new JScrollPane(logs);
-		c.gridy = 1;
-		logPanel.add(logsScroll,c);
+		logPanel.add(logsScroll);
 		
 		add(logPanel);
 	}
@@ -86,11 +109,7 @@ public class MainPanel extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == power){
-			try {
-				parseEmailCredentials();
-			} catch (IOException | ParseException e1) {
-				e1.printStackTrace();
-			}
+			power.setEnabled(false);
 			for(int i=0; i<emails.size();i++){
 				new Thread(new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i)))).start();
 			}
@@ -105,7 +124,25 @@ public class MainPanel extends JPanel implements ActionListener{
 		emails = (JSONArray)bodySource.get("emails");
 		credentials = (JSONObject)bodySource.get("credentials");
 	}
-	public static void setLog(String log){
-		logs.setText(logs.getText()+"\n"+log);
+	public static void setLog(String log,String type){
+		StyledDocument doc = logs.getStyledDocument();
+
+        Style style = logs.addStyle("I'm a Style", null);
+		if(type.equals("error")){
+			StyleConstants.setForeground(style, Color.red);
+			try { doc.insertString(doc.getLength(), log+"\n",style); }
+	        catch (BadLocationException e){}
+		}else if(type.equals("regular")){
+			StyleConstants.setForeground(style, Color.black);
+			try { doc.insertString(doc.getLength(), log+"\n",style); }
+	        catch (BadLocationException e){}
+		}else if(type.equals("done")){
+			StyleConstants.setForeground(style, Color.green);
+			try { doc.insertString(doc.getLength(), log+"\n",style); }
+	        catch (BadLocationException e){}
+		}
+	}
+	public static JSONArray getEmail(){
+		return emails;
 	}
 }
