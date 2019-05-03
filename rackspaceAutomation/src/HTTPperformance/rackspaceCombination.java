@@ -1,6 +1,5 @@
 package HTTPperformance;
 
-import java.awt.List;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import Graphics.MainPanel;
 import SMTPposts.rackspaceSMTP;
 
 public class rackspaceCombination implements Runnable {
-	public static int threadID = 0;
 	private final ArrayList<Integer> mailsIDs = new ArrayList<Integer>();
 	private String email;
 	private String pass;
@@ -48,7 +46,6 @@ public class rackspaceCombination implements Runnable {
 	}
 	@Override
 	public void run() {
-		threadID++;
 		String urlLogin = "https://apps.rackspace.com/login.php", rackspace = "https://apps.rackspace.com";
 		String urlLoginParameters  = "hostname=mailtrust.com&type=email&fake_pwd=Password";
 		
@@ -108,10 +105,6 @@ public class rackspaceCombination implements Runnable {
 						e.printStackTrace();
 					}
 				}
-			}
-			if(threadID == 1){
-				threadID--;
-				MainPanel.setLog("DONE --------------- DONE ", "done");
 			}
 		}
 		else{
