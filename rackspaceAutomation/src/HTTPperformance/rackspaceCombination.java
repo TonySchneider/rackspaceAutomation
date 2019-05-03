@@ -1,8 +1,11 @@
 package HTTPperformance;
 
+import java.awt.List;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+
+import javax.mail.MessagingException;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -10,8 +13,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import Graphics.MainPanel;
+import SMTPposts.rackspaceSMTP;
 
 public class rackspaceCombination implements Runnable {
+	public static int threadID = 0;
 	private final ArrayList<Integer> mailsIDs = new ArrayList<Integer>();
 	private String email;
 	private String pass;
@@ -43,6 +48,7 @@ public class rackspaceCombination implements Runnable {
 	}
 	@Override
 	public void run() {
+		threadID++;
 		String urlLogin = "https://apps.rackspace.com/login.php", rackspace = "https://apps.rackspace.com";
 		String urlLoginParameters  = "hostname=mailtrust.com&type=email&fake_pwd=Password";
 		
@@ -80,12 +86,32 @@ public class rackspaceCombination implements Runnable {
 				}
 				/////////////////////
 				
-				if(mailsIDs.size() == 0){
-					System.out.println("("+emailName+")No stuck mails");
-					MainPanel.setLog("("+emailName+")No stuck mails","regular");
+				if(mailsIDs.size() != 0){
+
+					ArrayList<Thread> threadList = new ArrayList<Thread>();
+			        for(int i=0;i<mailsIDs.size();i++){
+			        	Thread thread = new Thread((new HTTPpostThread(emailName, "https://apps.rackspace.com/versions/webmail/16.4.1-RC/archive/fetch.php",login.getCookies(), login.getWSID()+"&msg_list=%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22",mailsIDs.get(i),email,pass)));
+			        	thread.start();
+			        	threadList.add(thread);
+			        }
+			        for(Thread t : threadList) {
+			            // waits for this thread to die
+			            try {
+							t.join();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+			        }
+			        try {
+						rackspaceSMTP.removeEmail(email, pass);
+					} catch (MessagingException | IOException e) {
+						e.printStackTrace();
+					}
 				}
-		        for(int i=0;i<mailsIDs.size();i++)
-		        	new Thread((new HTTPpostThread(emailName, "https://apps.rackspace.com/versions/webmail/16.4.1-RC/archive/fetch.php",login.getCookies(), login.getWSID()+"&msg_list=%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22",mailsIDs.get(i),email,pass))).start();
+			}
+			if(threadID == 1){
+				threadID--;
+				MainPanel.setLog("DONE --------------- DONE ", "done");
 			}
 		}
 		else{
