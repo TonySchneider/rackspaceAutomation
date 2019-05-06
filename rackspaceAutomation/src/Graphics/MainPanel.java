@@ -43,6 +43,7 @@ import HTTPperformance.HTTPpostThread;
 import HTTPperformance.rackspaceCombination;
 
 public class MainPanel extends JPanel implements ActionListener{
+	private static final long serialVersionUID = 1L;
 	private BufferedImage background = loadImage();
 	private static Dimension backgroundSize;
 	private final JPanel topPanel = new JPanel(),powerPanel = new JPanel(),logPanel = new JPanel();
@@ -115,13 +116,17 @@ public class MainPanel extends JPanel implements ActionListener{
 			for(int i=0; i<emails.size();i++){
 				new Thread(new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i)))).start();
 			}
+			while(true)
+				if(rackspaceCombination.getID() == 0){
+					setLog("DONE !", "done");
+					break;
+				}
 		}
 	}
 	public static void parseEmailCredentials() throws FileNotFoundException, IOException, ParseException{
 		JSONParser parser = new JSONParser(); 
-		File f=new File("credentials.json");
+		File f=new File("\\\\192.168.21.11\\tech support\\Tony's Tools\\RackSpace Shit\\credentials.json");
 		String path = f.getAbsolutePath();
-		path = path.replace("\\", "\\\\").replace("rackspaceAutomation\\\\credentials.json", "rackspaceAutomation\\\\src\\\\HTTPperformance\\\\credentials.json");
 		JSONObject bodySource = (JSONObject) parser.parse(new FileReader(path));
 		emails = (JSONArray)bodySource.get("emails");
 		credentials = (JSONObject)bodySource.get("credentials");

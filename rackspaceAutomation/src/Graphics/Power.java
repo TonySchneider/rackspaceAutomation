@@ -5,6 +5,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 public class Power extends JButton{
+	private static final long serialVersionUID = 1L;
 	private ImageIcon image;
 	public Power(String image,String rolloverImage){
 		setIcon(new ImageIcon(this.getClass().getResource(image)));

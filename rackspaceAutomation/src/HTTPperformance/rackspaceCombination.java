@@ -16,7 +16,6 @@ import SMTPposts.rackspaceSMTP;
 
 public class rackspaceCombination implements Runnable {
 	private static int ID = 0;
-	private int selfID;
 	private final ArrayList<Integer> mailsIDs = new ArrayList<Integer>();
 	private String email;
 	private String pass;
@@ -27,6 +26,7 @@ public class rackspaceCombination implements Runnable {
 		this.pass = pass;
 		emailName = email.substring(0, email.indexOf("@"))+" "+email.substring(email.indexOf("@")+1, email.indexOf("."));
 	}
+	public static int getID(){return ID;}
 	public void setIDS(String source) throws ParseException{
 		int index = source.indexOf("MessageList.inbox_cache");
         int index2 = source.indexOf(";;");
@@ -65,7 +65,6 @@ public class rackspaceCombination implements Runnable {
 		}
 		/////////////////////
 		if(ConnStatus.equals("302 Found")){
-			selfID = ID;
 			ID++;
 			login.firstSettings();
 			HTTPget webmail = new HTTPget(rackspace+login.getLocationResponse(),login.getCookies());
@@ -114,8 +113,6 @@ public class rackspaceCombination implements Runnable {
 					MainPanel.setLog("No emails stuck on "+emailName,"No emails");
 				}
 				ID--;
-				if(ID == 0)
-					MainPanel.setLog("DONE !","done");
 			}
 		}
 		else{

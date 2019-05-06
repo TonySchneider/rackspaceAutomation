@@ -21,8 +21,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import com.sun.mail.pop3.POP3Message;
-
 public class rackspaceSMTP {
 	public static boolean removeEmail(String username, String password) throws MessagingException, IOException{
 		Properties properties = new Properties();

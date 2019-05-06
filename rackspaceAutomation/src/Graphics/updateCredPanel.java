@@ -1,6 +1,5 @@
 package Graphics;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -17,6 +16,7 @@ import javax.swing.JTextField;
 import org.json.simple.JSONArray;
 
 public class updateCredPanel extends JPanel implements ActionListener {
+	private static final long serialVersionUID = 1L;
 	private final JComboBox<String> emailMenu = new JComboBox<String>();
 	private final JTextField passField = new JTextField();
 	private final JButton submit = new JButton("Update");
