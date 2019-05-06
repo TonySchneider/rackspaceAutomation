@@ -15,6 +15,8 @@ import Graphics.MainPanel;
 import SMTPposts.rackspaceSMTP;
 
 public class rackspaceCombination implements Runnable {
+	private static int ID = 0;
+	private int selfID;
 	private final ArrayList<Integer> mailsIDs = new ArrayList<Integer>();
 	private String email;
 	private String pass;
@@ -63,6 +65,8 @@ public class rackspaceCombination implements Runnable {
 		}
 		/////////////////////
 		if(ConnStatus.equals("302 Found")){
+			selfID = ID;
+			ID++;
 			login.firstSettings();
 			HTTPget webmail = new HTTPget(rackspace+login.getLocationResponse(),login.getCookies());
 			try {
@@ -86,6 +90,7 @@ public class rackspaceCombination implements Runnable {
 				if(mailsIDs.size() != 0){
 
 					ArrayList<Thread> threadList = new ArrayList<Thread>();
+					
 			        for(int i=0;i<mailsIDs.size();i++){
 			        	Thread thread = new Thread((new HTTPpostThread(emailName, "https://apps.rackspace.com/versions/webmail/16.4.1-RC/archive/fetch.php",login.getCookies(), login.getWSID()+"&msg_list=%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22",mailsIDs.get(i),email,pass)));
 			        	thread.start();
@@ -104,13 +109,18 @@ public class rackspaceCombination implements Runnable {
 					} catch (MessagingException | IOException e) {
 						e.printStackTrace();
 					}
+				}else{
+					System.out.println("No emails stuck on "+emailName);
+					MainPanel.setLog("No emails stuck on "+emailName,"No emails");
 				}
+				ID--;
+				if(ID == 0)
+					MainPanel.setLog("DONE !","done");
 			}
 		}
 		else{
 			System.out.println("Connection Error at "+emailName+" the pass is: "+pass);
 			MainPanel.setLog("Connection Error at "+emailName,"error");
 		}
-		
 	}
 }

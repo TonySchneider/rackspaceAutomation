@@ -138,8 +138,14 @@ public class MainPanel extends JPanel implements ActionListener{
 			StyleConstants.setForeground(style, Color.black);
 			try { doc.insertString(doc.getLength(), log+"\n",style); }
 	        catch (BadLocationException e){}
+		}else if(type.equals("No emails")){
+			StyleConstants.setForeground(style, Color.BLUE);
+			try { doc.insertString(doc.getLength(), log+"\n",style); }
+	        catch (BadLocationException e){}
 		}else if(type.equals("done")){
-			StyleConstants.setForeground(style, Color.green);
+			StyleConstants.setForeground(style, Color.GREEN);
+			StyleConstants.setFontSize(style, 25);
+			StyleConstants.setBold(style,true);
 			try { doc.insertString(doc.getLength(), log+"\n",style); }
 	        catch (BadLocationException e){}
 		}

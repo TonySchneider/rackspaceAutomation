@@ -79,6 +79,7 @@ public class HTTPpost extends HTTP {
 	    } catch (ZipException e) {
 	        e.printStackTrace();
 	    }
+	    
 	    deleteFile(downloadedFile.getAbsolutePath());
 	    return System.getProperty("java.io.tmpdir")+fileName;
 	}
