@@ -23,43 +23,37 @@ public class HTTPpostThread extends HTTPpost implements Runnable {
 	public boolean deleteFile(String path){
 		File file = new File(path); 
 		if(file.delete())
-            return true;
-        return false;
+			return true;
+		return false;
 	}
 	@Override
 	public void run() {
 		try {
 			//support-managers@cg.solutions,backoffice-shared@boitsoft.com,
 			String to = "support-managers@cg.solutions,backoffice-shared@boitsoft.com,tony@cg.solutions";
-			MainPanel.setLog("("+emailName+") Downloding files...","regular");
-			System.out.println("("+emailName+") Downloding files...");
+			MainPanel.setLog("("+emailName+") Downloding file...","regular");
+			System.out.println("("+emailName+") Downloding file...");
 			createConnection();
 			String folderPath = fileInputStream(emailName);
-//			String params = "type=batch&roe=false&jobs=%5B%7B%22call%22%3A%22Mail.deleteMessages%22%2C%22args%22%3A%5B%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22"+mailID+"%22%2C%22unread%22%3Afalse%7D%5D%2Cfalse%5D%7D%5D&wsid="+getWSID();
-//			HTTPpost toTrash = new HTTPpost("https://apps.rackspace.com/a/router.php",getCookies(),params);
-//			String toTrashStatus = toTrash.createConnection();
+			
 			if(folderPath != null){
 				File folder = new File(folderPath);
 				File[] listOfFiles = folder.listFiles();
-				for (int i = 0; i < listOfFiles.length; i++) {
-					  if (listOfFiles[i].isFile()) {
-						  if(rackspaceSMTP.sendEmail(getEmail(),getPass(),getEmail(),to,"[No Reply] Stuck Mail on "+emailName,"Hey,\n File attached.",new File(listOfFiles[i].getAbsolutePath()))){
-								System.out.println("("+emailName+")Mail sent.");
-								MainPanel.setLog("("+emailName+")Mail sent.","regular");
-							}
-						  deleteFile(listOfFiles[i].getAbsolutePath());
-					  }
+				if (listOfFiles[0].isFile()) {
+					if(rackspaceSMTP.sendEmail(getEmail(),getPass(),getEmail(),to,"[No Reply] Stuck Mail on "+emailName,"Hey,\n File attached.",new File(listOfFiles[0].getAbsolutePath()))){
+						System.out.println("("+emailName+")Mail sent.");
+						MainPanel.setLog("("+emailName+")Mail sent.","regular");
 					}
+					deleteFile(listOfFiles[0].getAbsolutePath());
+				}
 				deleteFile(folderPath);
-				System.out.println("("+emailName+") done.");
-				MainPanel.setLog("("+emailName+") done.","regular");
 			}
 			else
 				MainPanel.setLog("("+emailName+") Folder does not exists", "error");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }

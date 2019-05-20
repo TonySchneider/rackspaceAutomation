@@ -5,7 +5,9 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 public class HTTPget extends HTTP {
-
+	public HTTPget(String url) {
+		super(url);
+	}
 	public HTTPget(String url,List<String> cookies) {
 		super(url,cookies);
 	}

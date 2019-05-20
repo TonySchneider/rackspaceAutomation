@@ -10,13 +10,17 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -41,6 +45,9 @@ import org.json.simple.parser.ParseException;
 
 import HTTPperformance.HTTPpostThread;
 import HTTPperformance.rackspaceCombination;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class MainPanel extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
@@ -72,7 +79,6 @@ public class MainPanel extends JPanel implements ActionListener{
 		credentialsPanel = new updateCredPanel("Update Credentials",emails);
 		topPanel.add(credentialsPanel);
 		logPanel.setOpaque(false);
-		power.addActionListener(this);
 		c.gridy = 1;
 		powerPanel.add(power,c);
 		
@@ -89,6 +95,8 @@ public class MainPanel extends JPanel implements ActionListener{
 		logPanel.add(logsScroll);
 		
 		add(logPanel);
+		
+		power.addActionListener(this);
 	}
 	private BufferedImage loadImage(){
         URL imagePath = getClass().getResource("/Images/background.jpg");
@@ -109,18 +117,59 @@ public class MainPanel extends JPanel implements ActionListener{
         g.drawImage(background, 0, 0,size.width, size.height,0, 0, background.getWidth(), background.getHeight(), null);//set the background in 0,0 location (drawing the background)
     }
 	public static Dimension getBackgroundSize(){return backgroundSize;}
+	public static void writeLog(){
+		BufferedWriter writer = null;
+        try {
+            //create a temporary file
+            String date = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
+            String time = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
+            //HH:mm:ss
+            File logFile = new File("\\\\192.168.21.11\\tech support\\Tony's Tools\\Logs\\rackspace_logs.txt");
+
+            // This will output the full path where the file will be written to...
+
+            writer = new BufferedWriter(new FileWriter(logFile,true));
+            writer.newLine();
+            writer.write(System.getProperty("user.name")+" used it in "+date+" at "+time);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                // Close the writer regardless of what happens...
+                writer.close();
+            } catch (Exception e) {
+            }
+        }
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == power){
 			power.setEnabled(false);
+			writeLog();
+			
 			for(int i=0; i<emails.size();i++){
 				new Thread(new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i)))).start();
 			}
-			while(true)
-				if(rackspaceCombination.getID() == 0){
-					setLog("DONE !", "done");
-					break;
-				}
+			
+//			ArrayList<Thread> threadList = new ArrayList<Thread>();
+//			
+//	        for(int i=0;i<emails.size();i++){
+//	        	Thread thread = new Thread(new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i))));
+//	        	thread.start();
+//	        	threadList.add(thread);
+//	        }
+//	        for(Thread t : threadList) {
+//	            // waits for this thread to die
+//	            try {
+//					t.join();
+//				} catch (InterruptedException e1) {
+//					e1.printStackTrace();
+//				}
+//	        }
+			
+			
+			
+			
 		}
 	}
 	public static void parseEmailCredentials() throws FileNotFoundException, IOException, ParseException{

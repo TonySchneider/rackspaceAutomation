@@ -68,20 +68,28 @@ public class HTTPpost extends HTTP {
 	                throw new InterruptedException();
 	            } catch (InterruptedException e) {
 	                e.printStackTrace();
+	            }finally{
+	            	in.close();
+	        	    out.close();
 	            }
 	        }
 	    }
-	    in.close();
-	    out.close();
+//	    String nameOfFile = downloadedFile.getName();
+	    String path = System.getProperty("java.io.tmpdir")+fileName;
+	    File dir = new File(path);
+	    if(!dir.exists())
+	    	dir.mkdir();
+	    String DonloadedFilePath = downloadedFile.getAbsolutePath();
 	    try {
-	         ZipFile zipFile = new ZipFile(downloadedFile.getAbsolutePath());
-	         zipFile.extractAll(System.getProperty("java.io.tmpdir")+fileName);
+	         ZipFile zipFile = new ZipFile(DonloadedFilePath);
+	         zipFile.setRunInThread(false);
+	         zipFile.extractAll(path);
 	    } catch (ZipException e) {
 	        e.printStackTrace();
+	    }finally{
+	    	deleteFile(DonloadedFilePath);
 	    }
-	    
-	    deleteFile(downloadedFile.getAbsolutePath());
-	    return System.getProperty("java.io.tmpdir")+fileName;
+	    return DonloadedFilePath;
 	}
 	public boolean deleteFile(String path){
 		File file = new File(path); 

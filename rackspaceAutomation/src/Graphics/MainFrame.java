@@ -18,7 +18,7 @@ public class MainFrame extends JFrame {
 	}
 	public static MainFrame getInstance(){
 		if(frame == null)
-			frame = new MainFrame("Rackspace D&S Tool v0.1 (Beta)");
+			frame = new MainFrame("Rackspace D&S Tool v0.2");
 		return frame;
 	}
 	public static void main(String[] args) {

@@ -1,5 +1,6 @@
 package HTTPperformance;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -13,10 +14,11 @@ import org.json.simple.parser.ParseException;
 
 import Graphics.MainPanel;
 import SMTPposts.rackspaceSMTP;
+import SMTPposts.sendFileThread;
 
 public class rackspaceCombination implements Runnable {
-	private static int ID = 0;
 	private final ArrayList<Integer> mailsIDs = new ArrayList<Integer>();
+	private final String to = "support-managers@cg.solutions,backoffice-shared@boitsoft.com,tony@cg.solutions";
 	private String email;
 	private String pass;
 	private String emailName;
@@ -26,7 +28,6 @@ public class rackspaceCombination implements Runnable {
 		this.pass = pass;
 		emailName = email.substring(0, email.indexOf("@"))+" "+email.substring(email.indexOf("@")+1, email.indexOf("."));
 	}
-	public static int getID(){return ID;}
 	public void setIDS(String source) throws ParseException{
 		int index = source.indexOf("MessageList.inbox_cache");
         int index2 = source.indexOf(";;");
@@ -48,6 +49,49 @@ public class rackspaceCombination implements Runnable {
 	}
 	@Override
 	public void run() {
+//		String email = "finance@lordofthespins.com", pass = "nW23dbU2g4iuhfasSbHSc", emailName = "support lordofthespins",to = "tony@cg.solutions";
+//		String folderPath = null;
+//		try {
+//			folderPath = rackspaceSMTP.donwloadEmail(email,pass,emailName);
+//		} catch (MessagingException | IOException e1) {
+//			System.out.println("ERROR - ("+emailName+")Downloading files..");
+//			MainPanel.setLog("ERROR - ("+emailName+")Downloading files..","error");
+//		}
+//		if(folderPath != null){
+//			File folder = new File(folderPath);
+//			File[] listOfFiles = folder.listFiles();
+//			if(listOfFiles != null){
+//				ArrayList<Thread> threadList = new ArrayList<Thread>();
+//				for(int i=0;i<listOfFiles.length;i++) {
+//					System.out.println("("+emailName+")Sending files..");
+//					MainPanel.setLog("("+emailName+")Sending files..","regular");
+//					Thread thread = new Thread(new sendFileThread(email,pass,"support-managers@cg.solutions,backoffice-shared@boitsoft.com,tony@cg.solutions",emailName,listOfFiles[i]));
+//					thread.start();
+//		        	threadList.add(thread);
+//				}
+//		        for(Thread t : threadList) {
+//		            try {
+//						t.join();
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//		        }
+//				for(int i=0;i<listOfFiles.length;i++){
+//					System.out.println("("+emailName+")Deleting files..");
+//					MainPanel.setLog("("+emailName+")Deleting files..","regular");
+//					if (listOfFiles[i].isFile())
+//						deleteFile(listOfFiles[i].getAbsolutePath());
+//				}
+////				deleteFile(folderPath);
+//				try {
+//					rackspaceSMTP.removeEmail(email, pass);
+//				} catch (MessagingException | IOException e) {
+//					System.out.println("ERROR - ("+emailName+")Deleting files..");
+//					MainPanel.setLog("ERROR - ("+emailName+")Deleting files..","error");
+//				}
+//			}
+//			deleteFile(folderPath);
+//		}
 		String urlLogin = "https://apps.rackspace.com/login.php", rackspace = "https://apps.rackspace.com";
 		String urlLoginParameters  = "hostname=mailtrust.com&type=email&fake_pwd=Password";
 		
@@ -65,7 +109,6 @@ public class rackspaceCombination implements Runnable {
 		}
 		/////////////////////
 		if(ConnStatus.equals("302 Found")){
-			ID++;
 			login.firstSettings();
 			HTTPget webmail = new HTTPget(rackspace+login.getLocationResponse(),login.getCookies());
 			try {
@@ -91,7 +134,7 @@ public class rackspaceCombination implements Runnable {
 					ArrayList<Thread> threadList = new ArrayList<Thread>();
 					
 			        for(int i=0;i<mailsIDs.size();i++){
-			        	Thread thread = new Thread((new HTTPpostThread(emailName, "https://apps.rackspace.com/versions/webmail/16.4.1-RC/archive/fetch.php",login.getCookies(), login.getWSID()+"&msg_list=%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22",mailsIDs.get(i),email,pass)));
+			        	Thread thread = new Thread((new HTTPpostDownload(emailName, "https://apps.rackspace.com/versions/webmail/16.4.1-RC/archive/fetch.php",login.getCookies(), login.getWSID()+"&msg_list=%5B%7B%22folder%22%3A%22INBOX%22%2C%22uid%22%3A%22",mailsIDs.get(i))));
 			        	thread.start();
 			        	threadList.add(thread);
 			        }
@@ -103,21 +146,57 @@ public class rackspaceCombination implements Runnable {
 							e.printStackTrace();
 						}
 			        }
-			        try {
-						rackspaceSMTP.removeEmail(email, pass);
-					} catch (MessagingException | IOException e) {
-						e.printStackTrace();
+			        String folderPath = System.getProperty("java.io.tmpdir")+emailName;
+			        
+			        if(new File(folderPath).exists()){
+			        	threadList = new ArrayList<Thread>();
+			        	
+						File folder = new File(folderPath);
+						File[] listOfFiles = folder.listFiles();
+						for(int i=0;i<listOfFiles.length;i++){
+							if (listOfFiles[i].isFile()) {
+								Thread thread = new Thread((new sendFileThread(email,pass,to,emailName,listOfFiles[i])));
+					        	thread.start();
+					        	threadList.add(thread);
+							}
+						}
+						for(Thread t : threadList) {
+				            // waits for this thread to die
+				            try {
+								t.join();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+				        }
+						
+						
+						for(int i=0;i<listOfFiles.length;i++)
+							deleteFile(listOfFiles[i].getAbsolutePath());
+						deleteFile(folderPath);
+						
+						try {
+							rackspaceSMTP.removeEmail(email, pass);
+						} catch (MessagingException | IOException e) {
+							e.printStackTrace();
+						}
+						System.out.println("("+emailName+") Done");
+						MainPanel.setLog("("+emailName+") Done", "regular");
 					}
-				}else{
-					System.out.println("No emails stuck on "+emailName);
-					MainPanel.setLog("No emails stuck on "+emailName,"No emails");
+					else
+						MainPanel.setLog("("+emailName+") Folder does not exists", "error");
+			        
 				}
-				ID--;
 			}
 		}
 		else{
 			System.out.println("Connection Error at "+emailName+" the pass is: "+pass);
 			MainPanel.setLog("Connection Error at "+emailName,"error");
 		}
+	}
+	public static boolean deleteFile(String path){
+		File file = new File(path); 
+		if(file.delete())
+			return true;
+		return false;
 	}
 }
