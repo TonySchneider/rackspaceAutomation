@@ -3,6 +3,8 @@ package Graphics;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
@@ -18,7 +20,7 @@ public class MainFrame extends JFrame {
 	}
 	public static MainFrame getInstance(){
 		if(frame == null)
-			frame = new MainFrame("Rackspace D&S Tool v0.2");
+			frame = new MainFrame("Rackspace D&S Tool v0.5");
 		return frame;
 	}
 	public static void main(String[] args) {

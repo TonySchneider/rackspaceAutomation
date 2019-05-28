@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import net.lingala.zip4j.exception.ZipException;
 import Graphics.MainPanel;
 
 public class HTTPpostDownload extends HTTPpost implements Runnable {

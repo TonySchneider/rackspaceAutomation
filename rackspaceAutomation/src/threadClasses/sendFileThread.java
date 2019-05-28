@@ -1,4 +1,4 @@
-package SMTPposts;
+package threadClasses;
 
 import java.io.File;
 

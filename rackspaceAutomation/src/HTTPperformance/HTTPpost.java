@@ -54,7 +54,7 @@ public class HTTPpost extends HTTP {
 		this.locationResponse = this.conn.getHeaderField("Location");
 		this.wsid = (String) getLocationResponse().subSequence(15, getLocationResponse().length());
 	}
-	public String fileInputStream(String fileName) throws IOException{
+	public void fileInputStream(String fileName) throws IOException{
 		InputStream in = getConn().getInputStream();
 		File downloadedFile = File.createTempFile(fileName+"_", ".zip");
 	    FileOutputStream out = new FileOutputStream(downloadedFile);        
@@ -74,22 +74,26 @@ public class HTTPpost extends HTTP {
 	            }
 	        }
 	    }
+	    in.close();
+	    out.close();
 //	    String nameOfFile = downloadedFile.getName();
-	    String path = System.getProperty("java.io.tmpdir")+fileName;
-	    File dir = new File(path);
-	    if(!dir.exists())
-	    	dir.mkdir();
-	    String DonloadedFilePath = downloadedFile.getAbsolutePath();
-	    try {
-	         ZipFile zipFile = new ZipFile(DonloadedFilePath);
-	         zipFile.setRunInThread(false);
-	         zipFile.extractAll(path);
-	    } catch (ZipException e) {
-	        e.printStackTrace();
-	    }finally{
-	    	deleteFile(DonloadedFilePath);
-	    }
-	    return DonloadedFilePath;
+	    
+//	    String path = System.getProperty("java.io.tmpdir")+fileName;
+//	    File dir = new File(path);
+//	    if(!dir.exists())
+//	    	dir.mkdir();
+//	    
+//	    
+//	    String DonloadedFilePath = downloadedFile.getAbsolutePath();
+//	    ZipFile zipFile = null;
+//	    try {
+//	         zipFile = new ZipFile(DonloadedFilePath);
+//	         zipFile.extractAll(path);
+//	    } catch (ZipException e) {
+//	        e.printStackTrace();
+//	    }
+//	    return DonloadedFilePath;
+	    
 	}
 	public boolean deleteFile(String path){
 		File file = new File(path); 

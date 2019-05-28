@@ -1,12 +1,8 @@
-package SMTPposts;
+package threadClasses;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Random;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -25,68 +21,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import Graphics.MainPanel;
-import HTTPperformance.HTTPpostThread;
-
 public class rackspaceSMTP {
-	public static String donwloadEmail(String username, String password,String emailName) throws MessagingException, IOException{
-		Properties properties = new Properties();
-		String host = "imap.emailsrvr.com";
-		properties.put("mail.imap.host", host);
-		properties.put("mail.imap.port", "143");
-		properties.put("mail.imap.starttls.enable", "true");
-		Session emailSession = Session.getDefaultInstance(properties);
-
-		//create the POP3 store object and connect with the pop server
-		Store store = emailSession.getStore("imap");
-
-		store.connect(host, username, password);
-
-		//create the folder object and open it
-		Folder emailFolder = store.getFolder("INBOX");
-		emailFolder.open(Folder.READ_WRITE);
-
-		// retrieve the messages from the folder in an array and print it
-		Message[] messages = emailFolder.getMessages();
-		
-		ArrayList<Thread> threadList = new ArrayList<Thread>();
-		Random rand = new Random();
-		boolean thereBigFiles = false;
-		
-		for (int i = 0; i < messages.length; i++) 
-			if((double)messages[i].getSize()/1000000 > 10.0)
-				thereBigFiles = true;
-		
-		String folderName = emailName+" "+String.valueOf(rand.nextInt());
-		String path = System.getProperty("java.io.tmpdir")+folderName;
-		if(thereBigFiles){
-			File dir = new File(path);
-			dir.mkdir();
-			System.out.println(messages.length);
-			for (int i = 0; i < messages.length; i++) {
-				if((double)messages[i].getSize()/1000000 > 10.0){
-					System.out.println("("+emailName+")Downloading files..");
-					MainPanel.setLog("("+emailName+")Downloading files..","regular");
-					Thread thread = new Thread(new donwloadFileThread(messages[i],folderName));
-					thread.start();
-		        	threadList.add(thread);
-				}
-			}
-			for(Thread t : threadList) {
-	            // waits for this thread to die
-	            try {
-					t.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-	        }
-		}
-		//close the store and folder objects
-//		emailFolder.expunge();
-		emailFolder.close(true);
-		store.close();
-		return path;
-	}
 	public static boolean removeEmail(String username, String password) throws MessagingException, IOException{
 		Properties properties = new Properties();
 		String host = "imap.emailsrvr.com";

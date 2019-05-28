@@ -19,17 +19,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
@@ -43,11 +40,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import HTTPperformance.HTTPpostThread;
+import HTTPperformance.HTTPpostDownload;
 import HTTPperformance.rackspaceCombination;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class MainPanel extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
@@ -147,14 +142,11 @@ public class MainPanel extends JPanel implements ActionListener{
 			power.setEnabled(false);
 			writeLog();
 			
-			for(int i=0; i<emails.size();i++){
-				new Thread(new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i)))).start();
-			}
 			
 //			ArrayList<Thread> threadList = new ArrayList<Thread>();
 //			
-//	        for(int i=0;i<emails.size();i++){
-//	        	Thread thread = new Thread(new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i))));
+//			for(int i=0; i<emails.size();i++){
+//	        	Thread thread = new Thread((new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i)))));
 //	        	thread.start();
 //	        	threadList.add(thread);
 //	        }
@@ -167,8 +159,8 @@ public class MainPanel extends JPanel implements ActionListener{
 //				}
 //	        }
 			
-			
-			
+			for(int i=0; i<emails.size();i++)
+				new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i))).start();
 			
 		}
 	}
@@ -180,7 +172,7 @@ public class MainPanel extends JPanel implements ActionListener{
 		emails = (JSONArray)bodySource.get("emails");
 		credentials = (JSONObject)bodySource.get("credentials");
 	}
-	public static void setLog(String log,String type){
+	public synchronized static void setLog(String log,String type){
 		StyledDocument doc = logs.getStyledDocument();
 
         Style style = logs.addStyle("I'm a Style", null);
@@ -204,7 +196,24 @@ public class MainPanel extends JPanel implements ActionListener{
 	        catch (BadLocationException e){}
 		}
 	}
+//	public static void isDone(){
+//		StyledDocument doc = logs.getStyledDocument();
+//        Style style = logs.addStyle("I'm a Style", null);
+//        int counter = 0;
+//		for(int i=0;i<threadList.size();i++){
+//			if(!threadList.get(i).isAlive())
+//				counter++;
+//		}
+//		if(counter == threadList.size()){
+//			StyleConstants.setForeground(style, Color.GREEN);
+//			StyleConstants.setFontSize(style, 25);
+//			StyleConstants.setBold(style,true);
+//			try { doc.insertString(doc.getLength(), "DONE!\n",style); }
+//	        catch (BadLocationException e){}
+//		}
+//	}
 	public static JSONArray getEmail(){
 		return emails;
+		
 	}
 }
