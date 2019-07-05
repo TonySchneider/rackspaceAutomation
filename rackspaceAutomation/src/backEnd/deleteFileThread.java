@@ -1,4 +1,4 @@
-package threadClasses;
+package backEnd;
 
 import java.io.File;
 
@@ -18,9 +18,10 @@ public class deleteFileThread extends Thread {
 		return false;
 	}
 	public void run(){
-		System.out.println("("+emailName+") Deleting file..");
 		MainPanel.setLog("("+emailName+") Deleting file..", "regular");
 		
 		deleteFile(pathFile);
+		
+		System.gc();
 	}
 }

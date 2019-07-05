@@ -1,4 +1,4 @@
-package threadClasses;
+package backEnd;
 
 import java.io.File;
 
@@ -19,9 +19,10 @@ public class sendFileThread implements Runnable {
 	}
 	@Override
 	public void run() {
-		System.out.println("("+emailName+") Sending file..");
 		MainPanel.setLog("("+emailName+") Sending file..", "regular");
 		rackspaceSMTP.sendEmail(email,pass,email,to,"[No Reply] Stuck Mail on "+emailName,"Hey,\n File attached.",file);
+		
+		System.gc();
 	}
 
 }

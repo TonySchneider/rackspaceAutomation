@@ -20,7 +20,7 @@ public class MainFrame extends JFrame {
 	}
 	public static MainFrame getInstance(){
 		if(frame == null)
-			frame = new MainFrame("Rackspace D&S Tool v0.5");
+			frame = new MainFrame("Rackspace D&S Tool v0.6");
 		return frame;
 	}
 	public static void main(String[] args) {
@@ -29,9 +29,7 @@ public class MainFrame extends JFrame {
 		final MainPanel backgroundPanel = new MainPanel();
 
 		frameSize = new Dimension((int)MainPanel.getBackgroundSize().getWidth(),(int)MainPanel.getBackgroundSize().getHeight());
-//		final ButtonsPanel buttonsPanel = new ButtonsPanel();
 		frame.add(backgroundPanel);
-//		frame.add(buttonsPanel,BorderLayout.SOUTH);//stick the panel of the buttons in the SOUTH location.  
 		frame.setPreferredSize(new Dimension(frameSize.width,(int)(frameSize.height)));//set size of the frame as the size of the background
 		frame.setLocation(screenSize.width/2-frame.getPreferredSize().width/2, screenSize.height/2-frame.getPreferredSize().height/2);//set the frame in the middle of the screen
 		

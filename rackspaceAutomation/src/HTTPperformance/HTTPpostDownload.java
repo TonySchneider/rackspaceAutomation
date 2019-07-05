@@ -24,13 +24,12 @@ public class HTTPpostDownload extends HTTPpost implements Runnable {
 	public void run() {
 		try {
 			MainPanel.setLog("("+emailName+") Downloding file...","regular");
-			System.out.println("("+emailName+") Downloding file...");
 			createConnection();
 			fileInputStream(emailName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		System.gc();
 	}
 
 }

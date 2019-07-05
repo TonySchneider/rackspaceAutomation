@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
@@ -40,7 +41,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import HTTPperformance.HTTPpostDownload;
 import HTTPperformance.rackspaceCombination;
 
 
@@ -49,11 +49,11 @@ public class MainPanel extends JPanel implements ActionListener{
 	private BufferedImage background = loadImage();
 	private static Dimension backgroundSize;
 	private final JPanel topPanel = new JPanel(),powerPanel = new JPanel(),logPanel = new JPanel();
-	private updateCredPanel credentialsPanel;
+//	private updateCredPanel credentialsPanel;
 	private static final JTextPane logs = new JTextPane();
 	private static JSONArray emails;
 	private static JSONObject credentials;
-	private final Power power = new Power("/Images/power.png","/Images/power2.png");;
+	private final Power power = new Power("/Images/power.png","/Images/power2.png");
 	public MainPanel(){
 		try {
 			parseEmailCredentials();
@@ -61,18 +61,24 @@ public class MainPanel extends JPanel implements ActionListener{
 			e1.printStackTrace();
 		}
 		setLayout(new GridLayout(2,1));
+		
+		
+		
 		topPanel.setLayout(new GridLayout(1,2));
 		topPanel.setOpaque(false);
 //		credentialsPanel.setOpaque(false);
-		
 		powerPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
 		JLabel warning= new JLabel(new ImageIcon(this.getClass().getResource("/Images/warning.jpg"))); 
 		powerPanel.add(warning,c);
 		powerPanel.setOpaque(false);
-		credentialsPanel = new updateCredPanel("Update Credentials",emails);
-		topPanel.add(credentialsPanel);
+//		credentialsPanel = new updateCredPanel("Update Credentials",emails);
+//		topPanel.add(credentialsPanel);
+		
+		
+		
+		
 		logPanel.setOpaque(false);
 		c.gridy = 1;
 		powerPanel.add(power,c);
@@ -159,9 +165,63 @@ public class MainPanel extends JPanel implements ActionListener{
 //				}
 //	        }
 			
-			for(int i=0; i<emails.size();i++)
-				new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i))).start();
+//			for(int i=0; i<emails.size();i++){
+//				if(credentials.get(emails.get(i)) != null)
+//					new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i))).start();
+//				else
+//					System.out.println((String)emails.get(i)+" has no password.");
+//			}
 			
+			
+			SwingWorker<Boolean , Integer> sw = new SwingWorker<Boolean, Integer>()  {
+				@Override
+				protected Boolean doInBackground() throws Exception {
+					ArrayList<rackspaceCombination> threadList = new ArrayList<rackspaceCombination>();
+					
+					for(int i=0; i<emails.size();i++){
+						rackspaceCombination thread = new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i)));
+			        	thread.start();
+			        	Thread.sleep(200);
+			        	threadList.add(thread);
+			        	
+			        }
+			        for(Thread t : threadList) {
+			            // waits for this thread to die
+			            try {
+							t.join();
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+			        }
+					
+//					for(int i=0; i<emails.size();i++){
+//						if(credentials.get(emails.get(i)) != null)
+//							new rackspaceCombination((String)emails.get(i), (String)credentials.get(emails.get(i))).start();
+//						else
+//							System.out.println((String)emails.get(i)+" has no password.");
+//					}
+					
+					//finished
+					return true;
+				} 
+				@Override
+				protected void done(){
+					
+					if(rackspaceCombination.thereNoStuckMails())
+						setLog("No Stuck Mails!", "done");
+					else
+						setLog("All Mails Sent Successfully!", "done");
+					
+					rackspaceCombination.clearMails();
+					power.setEnabled(true);
+					
+					
+					System.gc();
+				}
+				
+	        };
+	        
+	        sw.execute();
 		}
 	}
 	public static void parseEmailCredentials() throws FileNotFoundException, IOException, ParseException{
