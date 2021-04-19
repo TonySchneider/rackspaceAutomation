@@ -8,7 +8,7 @@ public class casinoCrazyRemoving {
 
 	public static void main(String[] args) {
 		try {
-			gmailPorts.readEmail("finance@crazycasinoclub.com","Crazy1948");
+			gmailPorts.readEmail("finance@crazycasinoclub.com","");
 		} catch (MessagingException | IOException e) {
 			e.printStackTrace();
 		}
